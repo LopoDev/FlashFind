@@ -1,0 +1,8 @@
+[
+  {
+    "label": "tauri dev",
+    "command": "npm run tauri dev",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  }
+]
+</parameter>

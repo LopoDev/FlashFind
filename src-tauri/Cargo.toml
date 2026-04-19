@@ -1,0 +1,70 @@
+[package]
+name = "flashfind"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+edition = "2021"
+
+[lib]
+# _lib サフィックスはWindowsでの名前衝突を防ぐために必要
+# 参考: https://github.com/rust-lang/cargo/issues/8519
+name = "flashfind_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# ワークスペースのメンバークレート一覧
+[workspace]
+members = [
+    "crates/parser",
+    "crates/pipeline",
+    "crates/qdrant",
+    "crates/sqlite",
+    "crates/treesitter",   # コード解析用のtree-sitterクレート
+]
+
+# ワークスペース全体で共有する依存関係
+# 各クレートは { workspace = true } で参照する
+[workspace.dependencies]
+sqlite     = { path = "./crates/sqlite" }
+qdrant     = { path = "./crates/qdrant" }
+parser     = { path = "./crates/parser" }
+pipeline   = { path = "./crates/pipeline" }
+treesitter = { path = "./crates/treesitter" }
+
+tauri               = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-shell  = "2"
+
+anyhow     = "1.0.102"
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono     = "0.4.44"
+rusqlite   = "0.39.0"
+walkdir    = "2.5.0"
+calamine   = "0.34.0"
+futures    = "0.3.32"
+tokio           = { version = "1", features = ["sync", "time"] }
+
+qdrant-client = "1.17.0"
+fastembed     = "5.13.1"
+
+# tree-sitter 本体と各言語のグラマー
+# バージョンは互いに整合している必要がある
+# ※ 言語クレートのバージョンが合わない場合は cargo update で調整すること
+tree-sitter           = "0.26"
+tree-sitter-rust      = "0.21"
+tree-sitter-python    = "0.21"
+tree-sitter-cpp       = "0.22"
+tree-sitter-c-sharp   = "0.21"
+
+[dependencies]
+tauri    = { workspace = true }
+pipeline = { workspace = true }
+
+tauri-plugin-opener = { workspace = true }
+tauri-plugin-dialog = { workspace = true }
+tauri-plugin-shell  = { workspace = true }
+tokio = { workspace = true }

@@ -1,0 +1,9 @@
+[
+  {
+    "label": "FlashFind (Tauri)",
+    "adapter": "CodeLLDB",
+    "program": "${workspaceFolder}/src-tauri/target/debug/flashfind",
+    "args": [],
+    "cwd": "${workspaceFolder}",
+  },
+]

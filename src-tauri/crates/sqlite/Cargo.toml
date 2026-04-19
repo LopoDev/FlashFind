@@ -1,0 +1,11 @@
+[package]
+name = "sqlite"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = { workspace = true }
+chrono = { workspace = true }
+rusqlite = { workspace = true }
+tauri = { workspace = true }
+walkdir = { workspace = true }

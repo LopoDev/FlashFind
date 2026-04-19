@@ -1,0 +1,16 @@
+[package]
+name = "treesitter"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = { workspace = true }
+
+# tree-sitter 本体: AST パーサーのコアライブラリ
+tree-sitter = { workspace = true }
+
+# 各言語のグラマー（構文ルールの定義）
+tree-sitter-rust    = { workspace = true }  # .rs
+tree-sitter-python  = { workspace = true }  # .py
+tree-sitter-cpp     = { workspace = true }  # .cpp .h .cc .c
+tree-sitter-c-sharp = { workspace = true }  # .cs

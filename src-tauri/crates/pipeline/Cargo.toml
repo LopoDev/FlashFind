@@ -1,0 +1,18 @@
+[package]
+name = "pipeline"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tauri = { workspace = true }
+anyhow = { workspace = true }
+parser = { workspace = true }
+sqlite = { workspace = true }
+qdrant = { workspace = true }
+walkdir = { workspace = true }
+chrono = { workspace = true }
+tauri-plugin-shell = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true }
+treesitter = { workspace = true }
+tokio = { workspace = true }

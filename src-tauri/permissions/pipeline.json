@@ -1,0 +1,7 @@
+{
+  "identifier": "allow-commands",
+  "description": "Allows indexing and search",
+  "commands": {
+    "allow": ["index_directory", "search"]
+  }
+}

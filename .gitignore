@@ -1,0 +1,40 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# fastembed MLモデルキャッシュ（起動時に自動ダウンロードされる）
+src-tauri/.fastembed_cache/
+
+# Qdrant実行時データ
+src-tauri/storage/
+src-tauri/snapshots/
+src-tauri/.qdrant-initialized
+
+# SQLiteデータベース（実行時生成）
+src-tauri/app.db
+
+# Pythonサイドカービルド成果物
+src-python/build/
+src-python/dist/
+src-python/__pycache__/
