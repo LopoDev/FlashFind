@@ -11,7 +11,12 @@ use chrono::{DateTime, Local};
 use sqlite::FileResult;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock, Mutex};
+use std::collections::HashSet;
+
+/// 現在インデックス中のディレクトリを追跡するグローバルロック。
+/// 同一ディレクトリへの並行インデックス（起動時再インデックス + 手動再パース）を防ぐ。
+static INDEXING: LazyLock<Mutex<HashSet<String>>> = LazyLock::new(|| Mutex::new(HashSet::new()));
 use std::sync::atomic::{AtomicUsize, Ordering};
 use futures::future::join_all;
 use serde::Serialize;
@@ -41,6 +46,20 @@ pub async fn get_directories(app: AppHandle) -> Result<Vec<String>, String> {
 }
 
 async fn index_directory_impl(app: AppHandle, dir_path: &str) -> Result<()> {
+    // 同一ディレクトリの並行インデックスを防ぐ
+    {
+        let mut set = INDEXING.lock().map_err(|_| anyhow!("インデックスロック取得失敗"))?;
+        if !set.insert(dir_path.to_string()) {
+            println!("[pipeline] {} は既にインデックス中のためスキップ", dir_path);
+            return Ok(());
+        }
+    }
+    let result = run_index_directory(&app, dir_path).await;
+    if let Ok(mut set) = INDEXING.lock() { set.remove(dir_path); }
+    result
+}
+
+async fn run_index_directory(app: &AppHandle, dir_path: &str) -> Result<()> {
     println!("[pipeline] インデックス開始: {}", dir_path);
 
     let db_path = get_db_path(&app)?;
@@ -79,7 +98,8 @@ async fn index_directory_impl(app: AppHandle, dir_path: &str) -> Result<()> {
         &db_path,
     )?;
 
-    let total   = new_files.len() + modified_files.len();
+    let total = new_files.iter().filter(|p| is_excel_ext(p) || is_code_ext(p)).count()
+            + modified_files.iter().filter(|p| is_excel_ext(p) || is_code_ext(p)).count();
     let counter = Arc::new(AtomicUsize::new(0));
 
     let new_parsed = parse_files(&app, dir_path, new_files.clone(), total, counter.clone()).await?;
