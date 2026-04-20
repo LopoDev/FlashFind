@@ -16,9 +16,9 @@ export default function AddDirectoryButton({ onAdded }: Props) {
     setIndexing(true);
     try {
       await invoke("index_directory", { dirPath: selected });
-      onAdded();
     } finally {
       setIndexing(false);
+      onAdded();
     }
   };
 
