@@ -51,6 +51,7 @@ async fn index_directory_impl(app: AppHandle, dir_path: &str) -> Result<()> {
         let mut set = INDEXING.lock().map_err(|_| anyhow!("インデックスロック取得失敗"))?;
         if !set.insert(dir_path.to_string()) {
             println!("[pipeline] {} は既にインデックス中のためスキップ", dir_path);
+            app.emit("index_skipped", dir_path).ok();
             return Ok(());
         }
     }
