@@ -3840,6 +3840,7 @@ name = "pipeline"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "calamine",
  "chrono",
  "futures",
  "parser",
@@ -3847,7 +3848,6 @@ dependencies = [
  "serde",
  "sqlite",
  "tauri",
- "tauri-plugin-shell",
  "tokio",
  "treesitter",
  "walkdir",

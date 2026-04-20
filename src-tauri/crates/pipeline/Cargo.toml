@@ -11,7 +11,7 @@ sqlite = { workspace = true }
 qdrant = { workspace = true }
 walkdir = { workspace = true }
 chrono = { workspace = true }
-tauri-plugin-shell = { workspace = true }
+calamine = { workspace = true }
 futures = { workspace = true }
 serde = { workspace = true }
 treesitter = { workspace = true }
