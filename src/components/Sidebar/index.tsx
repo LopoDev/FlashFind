@@ -19,7 +19,7 @@ export default function Sidebar({ onClose }: Props) {
   useEffect(() => {
     let unlisten: (() => void) | null = null;
     listen<string>("index_skipped", (event) => {
-      const parts = event.payload.replace(/\/g, "/").split("/");
+      const parts = event.payload.replace(/\\/g, "/").split("/");
       const dirName = parts[parts.length - 1] || event.payload;
       setNotice(`「${dirName}」は既にインデックス中です`);
       setTimeout(() => setNotice(null), 3000);
