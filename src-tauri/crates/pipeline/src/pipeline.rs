@@ -100,10 +100,12 @@ async fn run_index_directory(app: &AppHandle, dir_path: &str) -> Result<()> {
 
     let new_files: Vec<String> = current_map.keys()
         .filter(|k| !recorded_map.contains_key(k.as_str()))
+        .filter(|k| is_excel_ext(k) || is_code_ext(k))
         .cloned().collect();
 
     let modified_files: Vec<String> = current_map.iter()
         .filter(|(path, updated_at)| {
+            (is_excel_ext(path) || is_code_ext(path)) &&
             recorded_map.get(*path).map_or(false, |r| r != *updated_at)
         })
         .map(|(path, _)| path.clone()).collect();
