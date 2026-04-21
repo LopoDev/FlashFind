@@ -208,20 +208,24 @@ pub async fn sync_file(file_path: &str, new_chunks: Vec<ParsedFile>) -> Result<(
 }
 
 /// ファイルが削除されたとき、そのファイルの全チャンクを Qdrant から消す。
+///
+/// scroll + 個別削除（旧実装: 2N 回の API コール）の代わりに
+/// Filter::should で一括削除し、256 件ずつバッチ処理する。
+/// 1000 ファイルなら 2000 回 → 4 回に削減。
 pub async fn delete_by_file_paths(file_paths: Vec<String>) -> Result<()> {
     if file_paths.is_empty() { return Ok(()); }
     let client = make_client()?;
     if !client.collection_exists(COLLECTION_NAME).await.map_err(|e| anyhow!("{:?}", e))? {
         return Ok(());
     }
-    for path in &file_paths {
-        let ids = scroll_chunk_ids_for_file(&client, path).await?;
-        if ids.is_empty() { continue; }
-        let point_ids: Vec<PointId> = ids.into_iter().map(|id| id.into()).collect();
+    for batch in file_paths.chunks(256) {
+        let conditions: Vec<Condition> = batch.iter()
+            .map(|path| Condition::matches("file", path.clone()))
+            .collect();
         client.delete_points(
             DeletePointsBuilder::new(COLLECTION_NAME)
-                .points(PointsIdsList { ids: point_ids })
-        ).await.map_err(|e| anyhow!("削除失敗 {}: {:?}", path, e))?;
+                .points(Filter::should(conditions))
+        ).await.map_err(|e| anyhow!("一括削除失敗: {:?}", e))?;
     }
     Ok(())
 }
