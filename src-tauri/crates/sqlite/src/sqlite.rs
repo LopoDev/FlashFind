@@ -154,3 +154,14 @@ pub fn get_roots(save_dir: &Path) -> Result<Vec<String>> {
         .collect::<Result<Vec<String>>>()?;
     Ok(vec)
 }
+
+
+/// ルートディレクトリを削除する（root_folders + folders の両テーブルから）
+pub fn delete_root(root_path: &str, save_dir: &Path) -> Result<()> {
+    let mut conn = Connection::open(get_db_path_from_save_dir(save_dir))?;
+    let tx = conn.transaction()?;
+    tx.execute("DELETE FROM root_folders WHERE path = ?1", [root_path])?;
+    tx.execute("DELETE FROM folders WHERE root_dir = ?1", [root_path])?;
+    tx.commit()?;
+    Ok(())
+}

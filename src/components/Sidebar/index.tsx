@@ -52,7 +52,7 @@ export default function Sidebar({ onClose }: Props) {
 
       {/* ディレクトリ一覧 */}
       <div className="flex-1 overflow-y-auto">
-        <DirectoryList refreshTrigger={refreshTrigger} />
+        <DirectoryList refreshTrigger={refreshTrigger} onDeleted={handleAdded} />
       </div>
 
       {/* 追加ボタン */}

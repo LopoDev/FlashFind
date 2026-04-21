@@ -53,6 +53,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             pipeline::index_directory,
+            pipeline::delete_directory,
             pipeline::search,
             pipeline::get_directories,
         ])

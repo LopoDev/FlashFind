@@ -35,6 +35,26 @@ pub async fn index_directory(app: tauri::AppHandle, dir_path: &str) -> Result<()
 }
 
 #[tauri::command]
+pub async fn delete_directory(app: tauri::AppHandle, dir_path: &str) -> Result<(), String> {
+    delete_directory_impl(app, dir_path).await.map_err(|e| e.to_string())
+}
+
+async fn delete_directory_impl(app: AppHandle, dir_path: &str) -> Result<()> {
+    let db_path = get_db_path(&app)?;
+
+    // SQLite からこのルート下の全ファイルパスを取得して Qdrant から削除
+    let files = sqlite::get_files_by_root(dir_path, &db_path)?;
+    let file_paths: Vec<String> = files.into_iter().map(|f| f.path).collect();
+    qdrant::delete_by_file_paths(file_paths).await?;
+
+    // SQLite から root_folders + folders を削除
+    sqlite::delete_root(dir_path, &db_path).map_err(|e| anyhow!("{}", e))?;
+
+    println!("[pipeline] ディレクトリ削除完了: {}", dir_path);
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn search(query: &str, extensions: Vec<String>) -> Result<Vec<SearchResult>, String> {
     qdrant::search(query, extensions).await.map_err(|e| e.to_string())
 }
